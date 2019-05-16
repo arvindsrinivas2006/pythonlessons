@@ -1,9 +1,9 @@
 import turtle
 window = turtle.Screen()
-window.bgcolor("#4283f4")
+window.bgcolor("blue")
 window.title("Color Square Spiral")
 
-Colors = ["red", "green", "yellow", "black"] 
+Colors = ["red"] 
 
 
 turtle_pen = turtle.Pen()

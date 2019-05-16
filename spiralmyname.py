@@ -1,6 +1,6 @@
 import turtle
 window = turtle.Screen()
-window.bgcolor("dark green")
+window.bgcolor("blue")
 window.title("Arvind's cool progam")
 turtle_pen = turtle.Pen()
 turtle_pen.pencolor("#f44242")
