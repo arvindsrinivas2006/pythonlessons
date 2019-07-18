@@ -3,7 +3,7 @@ window = turtle.Screen()
 window.bgcolor("blue")
 window.title("Color Square Spiral")
 
-Colors = ["red"] 
+Colors = ["red", "green", "blue", "yellow"] 
 
 
 turtle_pen = turtle.Pen()
