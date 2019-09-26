@@ -21,6 +21,8 @@ def load_images(*files):
     for file in files:
         image = load_image(file)
 
+        images.append(image)
+        
     return images
 
 class DummySound:

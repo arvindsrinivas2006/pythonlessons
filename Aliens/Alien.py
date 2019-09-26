@@ -8,8 +8,11 @@ class Alien(pygame.sprite.Sprite):
     speed = 13
     animation_cycle = 12
     images = []
-    def __init__(self):
+    def __init__(self, screen_rectangle):
         pygame.sprite.Sprite.__init__(self, self.containers)
+
+        SCREENRECT = screen_rectangle
+        
         self.image = self.images[0]
         self.rect = self.image.get_rect()
         self.facing = random.choice((-1, 1)) * self.speed

@@ -2,7 +2,7 @@ import pygame
 from pygame.locals import *
 import random
 
-class shot(pygame.sprite.Sprite):
+class Shot(pygame.sprite.Sprite):
     speed = -11
     
     images = []
