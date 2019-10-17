@@ -17,7 +17,6 @@ class Explosion(pygame.sprite.Sprite):
     def update(self):
         self.life = self.life - 1
 
-        self.image = self.frame + 1
         self.image = self.images[self.life//self.animation_cycle % 2]
         
         if self.life <= 0:

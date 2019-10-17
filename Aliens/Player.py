@@ -18,19 +18,26 @@ class Player(pygame.sprite.Sprite):
         self.image = self.images[0]
         
         self.rect = self.image.get_rect(midbottom=SCREENRECT.midbottom)
-        self.reloding = 0
+        self.reloading = 0
         self.origtop = self.rect.top
         
         self.facing = -1
         
-    def update(self):
-        self.rect.move_ip(self.facing, 0)
+    def move(self, direction):
+        if (direction is not None):
+            self.facing = direction
 
-        if not SCREENRECT.contains(self.rect):
-            self.facing = -self.facing
-            self.rect.top = self.rect.bottom + 1
-            self.rect = self.rect.clamp(SCREENRECT)
+        self.rect.move_ip(self.facing * self.speed, 0)
+
+        self.rect = self.rect.clamp(SCREENRECT)
+
+        if self.facing < 0:
+         self.image = self.images[0]
+        elif self.facing > 0:
+             self.rect.top = self.origtop - (self.rect.left//self.bounce % 2)
+
+    def gunpos(self):
+        gun_position = self.facing*self.gun_offset + self.rect.centerx
+
+        return gun_position, self.rect.top
         
-        self.frame = self.frame + 1
-        self.image = self.images[self.frame//self.animation_cycle % 3]
-            
