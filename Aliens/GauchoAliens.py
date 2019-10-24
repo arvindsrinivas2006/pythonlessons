@@ -87,6 +87,8 @@ def main(winstyle=0):
 
         
 def game_loop(all_game_rects, screen, background, shots, last_alien, aliens, bombs, winstyle, bestdepth, FULLSCREEN):
+    print("In GauchoAliens - game_loop()")
+
     clock = pygame.time.Clock()
 
     player = Player(SCREENRECT)
@@ -128,7 +130,76 @@ def game_loop(all_game_rects, screen, background, shots, last_alien, aliens, bom
         all_game_rects.update()
         handle_player_input(player, shots, shoot_sound)
 
-                    
+        if alien_reload:
+            alien_reload = alien_reload - 1
+        elif not int(random.random() * ALIEN_ODDS):
+            Alien(SCREENRECT)
+            alien_reload = ALIEN_RELOAD
+
+        if last_alien and not int(random.random() * BOMB_ODDS):
+            Bomb(last_alien.sprite)
+
+        detect_collisions(player, aliens, shots, bombs, boom_sound)
+
+        # draw the scene
+        is_dirty = all_game_rects.draw(screen)
+        pygame.display.update(is_dirty)
+        clock.tick(40)
+
+def check_player_life(player):
+    if (PlayerLives.lives < 1):
+        # player is dead
+        player.kill()
+
+def detect_collisions(player, aliens, shots, bombs, boom_sound):
+    for alien in pygame.sprite.spritecollide(player, aliens, 1):
+        boom_sound.play()
+        Explosion(alien)
+        Explosion(player)
+        Score.score_points = Score.score_points + 1
+        
+        PlayerLives.lives = PlayerLives.lives - 1
+     
+        check_player_life(player)
+         
+    # alien vs tank shot
+    for alien in pygame.sprite.groupcollide(shots,  aliens, 1, 1).keys():
+
+        boom_sound.play()
+        Explosion(alien)
+
+        Score.score_points = Score.score_points + 1
+
+    # player vs alien bomb
+    for bomb in pygame.sprite.spritecollide(player, bombs, 1):
+        boom_sound.play()
+
+        Explosion(player)
+        Explosion(bomb)
+
+        PlayerLives.lives = PlayerLives.lives - 1
+
+        check_player_life(player)
+
+
+        
+
+def handle_player_input(player, shots, shoot_sound):
+    # print("In GauchoAliens - handle_player_input()")
+
+    keystate = pygame.key.get_pressed() 
+    
+    direction = keystate[K_RIGHT] - keystate[K_LEFT]
+
+    player.move(direction)
+
+    firing = keystate[K_SPACE]
+
+    if not player.reloading and firing and len(shots) < MAX_SHOTS:
+        Shot(player.gunpos())
+        shoot_sound.play()
+
+    player.reloading = firing
 
 def set_game_obj_images():
     player_image = utility.load_image('player1.gif')

@@ -1,9 +1,9 @@
 import pygame
 from pygame.locals import *
 
-LIVES = 3  # player lives
-
 class PlayerLives(pygame.sprite.Sprite):
+    lives = 3  # player lives
+
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
 
@@ -15,8 +15,8 @@ class PlayerLives(pygame.sprite.Sprite):
         self.rect = self.image.get_rect().move(60, 450)
 
     def update(self):
-        if LIVES != self.last_lives:
-            self.last_lives = LIVES
-            msg = "Lives: %d" % LIVES
+        if self.lives != self.last_lives:
+            self.last_lives = self.lives
+            msg = "Lives: %d" % self.lives
             self.image = self.font.render(msg, 0, self.color)
 
