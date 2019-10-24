@@ -18,7 +18,7 @@ class Bomb(pygame.sprite.Sprite):
     def update(self):
         self.rect.move_ip(0, self.speed)
 
-        if self.rect.bottom >= 470:
+        if self.rect.bottom >= 750:
             Explosion(self)
             self.kill()
             

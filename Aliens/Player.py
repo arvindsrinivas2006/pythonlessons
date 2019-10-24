@@ -1,8 +1,6 @@
 import pygame
 from pygame.locals import *
 
-SCREENRECT = Rect(0, 0, 640, 480)
-
 class Player(pygame.sprite.Sprite):
     lives = 3
     speed = 10
@@ -13,11 +11,11 @@ class Player(pygame.sprite.Sprite):
     def __init__(self, screen_rectangle):
         pygame.sprite.Sprite.__init__(self, self.containers)
 
-        SCREENRECT = screen_rectangle
+        self.SCREENRECT = screen_rectangle
 
         self.image = self.images[0]
         
-        self.rect = self.image.get_rect(midbottom=SCREENRECT.midbottom)
+        self.rect = self.image.get_rect(midbottom=self.SCREENRECT.midbottom)
         self.reloading = 0
         self.origtop = self.rect.top
         
@@ -29,7 +27,7 @@ class Player(pygame.sprite.Sprite):
 
         self.rect.move_ip(self.facing * self.speed, 0)
 
-        self.rect = self.rect.clamp(SCREENRECT)
+        self.rect = self.rect.clamp(self.SCREENRECT)
 
         if self.facing < 0:
          self.image = self.images[0]

@@ -2,14 +2,12 @@ import pygame
 from pygame.locals import *
 import random
 
-from Explosion import Explosion
-
 class Score(pygame.sprite.Sprite):
     
     score_points = 0 
     
-    def __init__(self, alien):
-        pygame.sprite.Sprite.__init__(self, self.containers)
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
         
         self.font = pygame.font.Font(None, 20)
         self.color = Color("white")
@@ -18,7 +16,7 @@ class Score(pygame.sprite.Sprite):
     
         self.update()
         
-        self.rect = self.image.get_rect().move(10, 450)
+        self.rect = self.image.get_rect().move(20, 5)
         
     
     def update(self):

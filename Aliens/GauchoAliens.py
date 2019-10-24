@@ -71,7 +71,7 @@ def main(winstyle=0):
     Alien(SCREENRECT)
 
     if pygame.font is not None:
-        # all_game_rects.add(Score())
+        all_game_rects.add(Score())
         all_game_rects.add(PlayerLives())
 
     game_loop(all_game_rects, screen, background, shots, last_alien, aliens, bombs, winstyle, bestdepth, FULLSCREEN)
