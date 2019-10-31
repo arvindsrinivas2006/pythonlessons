@@ -7,6 +7,7 @@ from pygame.locals import *
 from Alien import Alien
 from bomb import Bomb
 from Explosion import Explosion
+from GameLevel import GameLevel
 from Player import Player
 from PlayerLives import PlayerLives
 from Score import Score
@@ -66,13 +67,13 @@ def main(winstyle=0):
     Bomb.containers = bombs, all_game_rects
     Explosion.containers = all_game_rects
     Score.containers = all_game_rects
-    PlayerLives.containers = all_game_rects
+    GameLevel.containers = all_game_rects
 
     Alien(SCREENRECT)
 
     if pygame.font is not None:
         all_game_rects.add(Score())
-        all_game_rects.add(PlayerLives())
+        all_game_rects.add(GameLevel())
 
     game_loop(all_game_rects, screen, background, shots, last_alien, aliens, bombs, winstyle, bestdepth, FULLSCREEN)
 
@@ -84,6 +85,10 @@ def main(winstyle=0):
     pygame.time.wait(1000)
 
     pygame.quit()
+
+def check_game_level(score):
+    if(GameLevel.level == 1 and score > 5):
+        GameLevel.level = 2
 
         
 def game_loop(all_game_rects, screen, background, shots, last_alien, aliens, bombs, winstyle, bestdepth, FULLSCREEN):
@@ -157,6 +162,7 @@ def detect_collisions(player, aliens, shots, bombs, boom_sound):
         Explosion(alien)
         Explosion(player)
         Score.score_points = Score.score_points + 1
+        check_game_level(Score.score_points)
         
         PlayerLives.lives = PlayerLives.lives - 1
      
@@ -169,7 +175,7 @@ def detect_collisions(player, aliens, shots, bombs, boom_sound):
         Explosion(alien)
 
         Score.score_points = Score.score_points + 1
-
+        check_game_level(Score.score_points)
     # player vs alien bomb
     for bomb in pygame.sprite.spritecollide(player, bombs, 1):
         boom_sound.play()
