@@ -68,12 +68,14 @@ def main(winstyle=0):
     Explosion.containers = all_game_rects
     Score.containers = all_game_rects
     GameLevel.containers = all_game_rects
+    PlayerLives.containers = all_game_rects
 
     Alien(SCREENRECT)
 
     if pygame.font is not None:
         all_game_rects.add(Score())
         all_game_rects.add(GameLevel())
+        all_game_rects.add(PlayerLives())
 
     game_loop(all_game_rects, screen, background, shots, last_alien, aliens, bombs, winstyle, bestdepth, FULLSCREEN)
 
@@ -87,9 +89,12 @@ def main(winstyle=0):
     pygame.quit()
 
 def check_game_level(score):
-    if(GameLevel.level == 1 and score > 5):
+    if(GameLevel.level == 1 and score > 10):
         GameLevel.level = 2
+    elif(GameLevel.level == 2 and score > 20):
+        GameLevel.level = 3
 
+    
         
 def game_loop(all_game_rects, screen, background, shots, last_alien, aliens, bombs, winstyle, bestdepth, FULLSCREEN):
     print("In GauchoAliens - game_loop()")
@@ -187,6 +192,12 @@ def detect_collisions(player, aliens, shots, bombs, boom_sound):
 
         check_player_life(player)
 
+    for bomb in pygame.sprite.groupcollide(shots, bombs, 1, 1).keys():
+        boom_sound.play()
+        Explosion(bomb)
+        bomb.kill()
+
+        
 
         
 
