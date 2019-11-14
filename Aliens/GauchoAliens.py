@@ -5,6 +5,7 @@ import pygame
 from pygame.locals import *
 
 from Alien import Alien
+from SpongeAlien import SpongeAlien
 from bomb import Bomb
 from Explosion import Explosion
 from GameLevel import GameLevel
@@ -55,8 +56,10 @@ def main(winstyle=0):
     set_game_sound()
     
     aliens = pygame.sprite.Group()
+    sponge_aliens = pygame.sprite.Group()
     shots = pygame.sprite.Group()
     bombs = pygame.sprite.Group()
+
 
     all_game_rects = pygame.sprite.RenderUpdates() 
     last_alien = pygame.sprite.GroupSingle()
@@ -69,6 +72,8 @@ def main(winstyle=0):
     Score.containers = all_game_rects
     GameLevel.containers = all_game_rects
     PlayerLives.containers = all_game_rects
+    SpongeAlien.containers = aliens, all_game_rects, last_alien
+
 
     Alien(SCREENRECT)
 
@@ -93,7 +98,8 @@ def check_game_level(score):
         GameLevel.level = 2
     elif(GameLevel.level == 2 and score > 20):
         GameLevel.level = 3
-
+    elif(GameLevel.level == 3 and score > 30):
+        GameLevel.level = 4
     
         
 def game_loop(all_game_rects, screen, background, shots, last_alien, aliens, bombs, winstyle, bestdepth, FULLSCREEN):
@@ -143,9 +149,13 @@ def game_loop(all_game_rects, screen, background, shots, last_alien, aliens, bom
         if alien_reload:
             alien_reload = alien_reload - 1
         elif not int(random.random() * ALIEN_ODDS):
-            Alien(SCREENRECT)
             alien_reload = ALIEN_RELOAD
 
+            if(GameLevel.level == 3):
+                SpongeAlien(SCREENRECT)
+            else:
+                Alien(SCREENRECT)
+            
         if last_alien and not int(random.random() * BOMB_ODDS):
             Bomb(last_alien.sprite)
 
@@ -230,6 +240,12 @@ def set_game_obj_images():
     (explosion_image, 1, 1)]
     Alien.images = utility.load_images(
         'alien1.gif',  'alien2.gif',  'alien3.gif')
+    # level 3 Aliens
+    SpongeAlien.images = utility.load_images(
+        "sponge_alien1.png",
+        "sponge_alien2.png",
+        "sponge_alien3.png"
+    )
 
     Bomb.images = [utility.load_image('bomb.gif')]
     Shot.images = [utility.load_image('shot.gif')]
