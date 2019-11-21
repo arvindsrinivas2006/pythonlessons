@@ -32,7 +32,9 @@ class Player(pygame.sprite.Sprite):
         if self.facing < 0:
          self.image = self.images[0]
         elif self.facing > 0:
-             self.rect.top = self.origtop - (self.rect.left//self.bounce % 2)
+            self.image = self.images[1]
+
+        self.rect.top = self.origtop - (self.rect.left//self.bounce % 2)
 
     def gunpos(self):
         gun_position = self.facing*self.gun_offset + self.rect.centerx

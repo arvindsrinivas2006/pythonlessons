@@ -231,8 +231,8 @@ def handle_player_input(player, shots, shoot_sound):
 def set_game_obj_images():
     player_image = utility.load_image('player1.gif')
 
-    Player.images = [player_image, pygame.transform.flip
-    (player_image, 1, 0)]
+    Player.images = [player_image, pygame.transform.flip(player_image, 1, 0)]
+
     explosion_image = utility.load_image('explosion1.gif')
 
     Explosion.images = [explosion_image,
