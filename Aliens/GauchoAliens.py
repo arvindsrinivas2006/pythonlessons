@@ -14,6 +14,7 @@ from PlayerLives import PlayerLives
 from Score import Score
 from Shot import Shot
 import utility
+from GreenAlien import GreenAlien
 
 if not pygame.image.get_extended():
     raise SystemExit("Sorry, extended image module required")
@@ -57,6 +58,7 @@ def main(winstyle=0):
     
     aliens = pygame.sprite.Group()
     sponge_aliens = pygame.sprite.Group()
+    green_aliens = pygame.sprite.Group()
     shots = pygame.sprite.Group()
     bombs = pygame.sprite.Group()
 
@@ -66,6 +68,7 @@ def main(winstyle=0):
 
     Player.containers = all_game_rects
     Alien.containers = aliens, all_game_rects, last_alien
+    GreenAlien.containers = green_aliens, all_game_rects
     Shot.containers = shots, all_game_rects
     Bomb.containers = bombs, all_game_rects
     Explosion.containers = all_game_rects
@@ -82,7 +85,7 @@ def main(winstyle=0):
         all_game_rects.add(GameLevel())
         all_game_rects.add(PlayerLives())
 
-    game_loop(all_game_rects, screen, background, shots, last_alien, aliens, bombs, winstyle, bestdepth, FULLSCREEN)
+    game_loop(all_game_rects, screen, background, shots, last_alien, aliens, green_aliens, bombs, winstyle, bestdepth, FULLSCREEN)
 
     # quit game
     # if pygame sound is running
@@ -102,7 +105,7 @@ def check_game_level(score):
         GameLevel.level = 4
     
         
-def game_loop(all_game_rects, screen, background, shots, last_alien, aliens, bombs, winstyle, bestdepth, FULLSCREEN):
+def game_loop(all_game_rects, screen, background, shots, last_alien, aliens, green_aliens, bombs, winstyle, bestdepth, FULLSCREEN):
     print("In GauchoAliens - game_loop()")
 
     clock = pygame.time.Clock()
@@ -153,13 +156,15 @@ def game_loop(all_game_rects, screen, background, shots, last_alien, aliens, bom
 
             if(GameLevel.level == 3):
                 SpongeAlien(SCREENRECT)
+            if GameLevel.level == 4:
+                GreenAlien(SCREENRECT)
             else:
                 Alien(SCREENRECT)
             
         if last_alien and not int(random.random() * BOMB_ODDS):
             Bomb(last_alien.sprite)
 
-        detect_collisions(player, aliens, shots, bombs, boom_sound)
+        detect_collisions(player, aliens, shots, bombs, boom_sound, green_aliens)
 
         # draw the scene
         is_dirty = all_game_rects.draw(screen)
@@ -171,7 +176,7 @@ def check_player_life(player):
         # player is dead
         player.kill()
 
-def detect_collisions(player, aliens, shots, bombs, boom_sound):
+def detect_collisions(player, aliens, shots, bombs, boom_sound, green_aliens):
     for alien in pygame.sprite.spritecollide(player, aliens, 1):
         boom_sound.play()
         Explosion(alien)
@@ -206,6 +211,26 @@ def detect_collisions(player, aliens, shots, bombs, boom_sound):
         boom_sound.play()
         Explosion(bomb)
         bomb.kill()
+
+    for green_alien in pygame.sprite.groupcollide(shots, green_aliens, 1, 1).keys():
+        boom_sound.play()
+        Explosion(green_alien)
+        Score.score_points = Score.score_points + 1
+        check_game_level(Score.score_points)
+        
+
+   # player vs GreenAlien
+    for green_alien in pygame.sprite.spritecollide(player, green_aliens, 1):
+       Explosion(green_alien)
+       boom_sound.play()
+
+       Score.score_points = Score.score_points + 2
+
+       check_game_level(Score.score_points)
+
+       PlayerLives.lives = PlayerLives.lives - 1
+
+       check_player_life(player)
 
         
 
@@ -246,7 +271,15 @@ def set_game_obj_images():
         "sponge_alien2.png",
         "sponge_alien3.png"
     )
+    #  level 4 GreenAlien
+    green_alien_image = utility.load_image("GreenAlien.png")
 
+    GreenAlien.images = [
+                            green_alien_image,
+                            pygame.transform.flip(green_alien_image,
+                            1, 0),
+                            green_alien_image
+    ]
     Bomb.images = [utility.load_image('bomb.gif')]
     Shot.images = [utility.load_image('shot.gif')]
 
