@@ -302,7 +302,58 @@ def set_game_sound():
         pygame.mixer.music.load(music)
         pygame.mixer.music.play(-1)
 
-    
+def game_over(screen, clock)
+    bright_red = (255, 0, 0)
+    bright_green = (0, 255, 0)
+    green = (77, 206, 30)
+    white = (84, 121, 130)
+    red = (255, 0, 0)
+    is_game_over = True
+
+    # show the mouse cursor
+    pygame.mouse.set_visible(1)
+
+    while is_game_over is True:
+        for event in pygame.event.get():
+            print(event)
+            if event.type == pygame.QUIT:
+                quit_game()
+
+        # set the background color for gameover screen
+        screen.fill(white)
+
+        largeText = pygame.font.Font('freesansbold.ttf', 115)
+        medium_text = pygame.font.Font('freesansbold.ttf', 100)
+
+        TextSurf, TextRect = text_objects("Game Over", largeText)
+        TextRect.center = ((DISPLAY_WIDTH/2), (DISPLAY_HEIGHT/2))
+        screen.blit(TextSurf, TextRect)
+
+        score_text = "Score: " + str(Score.score_points)
+
+        scoreSurf, scoreRect = text_objects(score_text, medium_text)
+
+        scoreRect.center = ((DISPLAY_WIDTH/4), (DISPLAY_HEIGHT/4))
+
+        screen.blit(scoreSurf, scoreRect)
+
+        level_text = "Level: " + str(GameLevel.level)
+
+        levelSurf, levelRect = text_objects(level_text, medium_text)
+
+        levelRect.center = ((DISPLAY_WIDTH * .75), (DISPLAY_HEIGHT/
+        4))
+
+        screen.blit(levelSurf, levelRect)
+
+        # mouse = pygame.mouse.get_pos()
+
+        # print(mouse)
+
+        button(screen, "Play Again!", 150, 450, 100, 50,
+               green, bright_green, main)
+               
+
 
     # call the "main" function if running this script
 if (__name__ == "__main__"):
