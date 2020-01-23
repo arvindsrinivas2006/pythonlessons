@@ -11,6 +11,7 @@ from Explosion import Explosion
 from GameLevel import GameLevel
 from Player import Player
 from PlayerLives import PlayerLives
+from SpaceMonster import SpaceMonster
 from Score import Score
 from Shot import Shot
 import utility
@@ -19,8 +20,11 @@ from GreenAlien import GreenAlien
 if not pygame.image.get_extended():
     raise SystemExit("Sorry, extended image module required")
 
+DISPLAY_WIDTH = 1024
+DISPLAY_HEIGHT= 768
 MAX_SHOTS = 2  # most player bullets onscreen
 ALIEN_ODDS = 22  # chances a new alien appears
+BLACK = (0, 0, 0)  # Red, Green, Blue, absence of color!
 BOMB_ODDS = 60  # chances a new bomb will drop
 ALIEN_RELOAD = 12  # frames between new aliens
 SCREENRECT = Rect(0, 0, 1024, 768)
@@ -85,9 +89,13 @@ def main(winstyle=0):
         all_game_rects.add(GameLevel())
         all_game_rects.add(PlayerLives())
 
-    game_loop(all_game_rects, screen, background, shots, last_alien, aliens, green_aliens, bombs, winstyle, bestdepth, FULLSCREEN)
+    clock = game_loop(all_game_rects, screen, background, shots, last_alien, aliens, green_aliens, bombs, winstyle, bestdepth, FULLSCREEN)
 
-    # quit game
+    game_over(screen, clock)
+
+    quit_game()
+    
+def quit_game():
     # if pygame sound is running
     if (pygame.mixer is not None):
         pygame.mixer.music.fadeout(1000)
@@ -95,6 +103,33 @@ def main(winstyle=0):
     pygame.time.wait(1000)
 
     pygame.quit()
+
+    # quit pyton
+    quit()
+
+def button(screen, msg, x, y, width, height, ic, ac, action=None):
+    mouse_position = pygame.mouse.get_pos()
+    mouse_click = pygame.mouse.get_pressed()
+    # print(mouse_click)
+
+    if (x + width > mouse_position[0] > x) and \
+            (y+height > mouse_position[1] > y):
+
+        pygame.draw.rect(screen, ac, (x, y, width, height))
+        
+        # is there a mouse click over the button
+        if mouse_click[0] == 1 and action is not None:
+            action()
+    else:
+        pygame.draw.rect(screen, ic, (x, y, width, height))
+
+    # create button
+    smallText = pygame.font.SysFont("comicsansms", 20)
+    textSurf, textRect = text_objects(msg, smallText)
+    textRect.center = ((x+(width/2)), (y+(height/2)))
+
+    screen.blit(textSurf, textRect)
+    
 
 def check_game_level(score):
     if(GameLevel.level == 1 and score > 10):
@@ -170,6 +205,8 @@ def game_loop(all_game_rects, screen, background, shots, last_alien, aliens, gre
         is_dirty = all_game_rects.draw(screen)
         pygame.display.update(is_dirty)
         clock.tick(40)
+    
+    return clock
 
 def check_player_life(player):
     if (PlayerLives.lives < 1):
@@ -302,7 +339,16 @@ def set_game_sound():
         pygame.mixer.music.load(music)
         pygame.mixer.music.play(-1)
 
-def game_over(screen, clock)
+def text_objects(text, font):
+    textSurface = font.render(text, True, BLACK)
+
+    return textSurface, textSurface.get_rect()
+
+
+
+
+
+def game_over(screen, clock):
     bright_red = (255, 0, 0)
     bright_green = (0, 255, 0)
     green = (77, 206, 30)
@@ -353,7 +399,12 @@ def game_over(screen, clock)
         button(screen, "Play Again!", 150, 450, 100, 50,
                green, bright_green, main)
                
+                
+        button(screen, "Quit", 550, 450, 100, 50, red, bright_red,
+        quit_game)
 
+        pygame.display.update()
+        clock.tick(15)
 
     # call the "main" function if running this script
 if (__name__ == "__main__"):
