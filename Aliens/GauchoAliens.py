@@ -7,6 +7,8 @@ from pygame.locals import *
 from Alien import Alien
 from SpongeAlien import SpongeAlien
 from bomb import Bomb
+from BubbleShield import BubbleShield
+from BubbleShieldBox import BubbleShieldBox
 from Explosion import Explosion
 from GameLevel import GameLevel
 from Player import Player
@@ -70,6 +72,8 @@ def main(winstyle=0):
     all_game_rects = pygame.sprite.RenderUpdates() 
     last_alien = pygame.sprite.GroupSingle()
 
+    BubbleShield.containers = all_game_rects
+    BubbleShieldBox.containers = all_game_rects
     Player.containers = all_game_rects
     Alien.containers = aliens, all_game_rects, last_alien
     GreenAlien.containers = green_aliens, all_game_rects
@@ -77,8 +81,12 @@ def main(winstyle=0):
     Bomb.containers = bombs, all_game_rects
     Explosion.containers = all_game_rects
     Score.containers = all_game_rects
+    Score.score_points = 0
     GameLevel.containers = all_game_rects
+    GameLevel.level = 1
     PlayerLives.containers = all_game_rects
+    PlayerLives.lives = 3
+
     SpongeAlien.containers = aliens, all_game_rects, last_alien
 
 
@@ -151,7 +159,11 @@ def game_loop(all_game_rects, screen, background, shots, last_alien, aliens, gre
     
     boom_sound = utility.load_sound("boom.wav")
     shoot_sound = utility.load_sound("car_door.wav")
-
+    bubble_shield = BubbleShield(player)
+    bubble_shield_box = BubbleShieldBox(SCREENRECT)
+    shield_spawned = False
+    shield_box_spawned = False
+    
     # establish player has 3 lives
     while (player.alive() is True):
         for event in pygame.event.get():
@@ -182,7 +194,7 @@ def game_loop(all_game_rects, screen, background, shots, last_alien, aliens, gre
             
         all_game_rects.clear(screen, background)
         all_game_rects.update()
-        handle_player_input(player, shots, shoot_sound)
+        handle_player_input(player, shots, bubble_shield, shoot_sound)
 
         if alien_reload:
             alien_reload = alien_reload - 1
@@ -199,6 +211,11 @@ def game_loop(all_game_rects, screen, background, shots, last_alien, aliens, gre
         if last_alien and not int(random.random() * BOMB_ODDS):
             Bomb(last_alien.sprite)
 
+        if(GameLevel.level == 1):
+            if(shield_box_spawned is False):
+                bubble_shield_box.is_active = True
+
+                shield_box_spawned = True
         detect_collisions(player, aliens, shots, bombs, boom_sound, green_aliens)
 
         # draw the scene
@@ -273,8 +290,9 @@ def detect_collisions(player, aliens, shots, bombs, boom_sound, green_aliens):
 
         
 
-def handle_player_input(player, shots, shoot_sound):
+def handle_player_input(player, shots, bubble_shield, shoot_sound):
     # print("In GauchoAliens - handle_player_input()")
+    global MAX_SHOTS
 
     keystate = pygame.key.get_pressed() 
     
@@ -282,6 +300,9 @@ def handle_player_input(player, shots, shoot_sound):
 
     player.move(direction)
 
+    if(bubble_shield.is_active is True):
+        bubble_shield.move(player)
+        
     firing = keystate[K_SPACE]
 
     if not player.reloading and firing and len(shots) < MAX_SHOTS:
@@ -294,7 +315,14 @@ def set_game_obj_images():
     player_image = utility.load_image('player1.gif')
 
     Player.images = [player_image, pygame.transform.flip(player_image, 1, 0)]
+    
+    bubble_shield_blank_box = utility.load_image_transparent_background("bubble shield blank box.png")
+    bubble_shield_box = utility.load_image("bubble shield box.png")
 
+    BubbleShieldBox.images = [
+        bubble_shield_blank_box,
+        bubble_shield_box
+    ]
     explosion_image = utility.load_image('explosion1.gif')
 
     Explosion.images = [explosion_image,
@@ -317,6 +345,24 @@ def set_game_obj_images():
                             1, 0),
                             green_alien_image
     ]
+
+    # level 5 space monster
+    space_monster_image = utility.load_image_transparent_background(
+        "spacemonster.png")
+    agro_monster_image = utility.load_image_transparent_background(
+        "spacemonster - agro.png")
+        
+    bubble_shield_blank = utility.load_image_transparent_background(
+        "bubble shield blank.png")
+
+    bubble_shield = utility.load_image_transparent_background(
+        "bubble shield.png")
+
+    BubbleShield.images = [bubble_shield_blank, bubble_shield]
+    
+                                        
+    
+
     Bomb.images = [utility.load_image('bomb.gif')]
     Shot.images = [utility.load_image('shot.gif')]
 

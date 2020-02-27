@@ -25,6 +25,23 @@ def load_images(*files):
         
     return images
 
+def load_image_transparent_background(file_name):
+    file_path_name = os.path.join(main_directory, "data", file_name)
+
+    try:
+        surface = pygame.image.load(file_path_name)
+    except pygame.error:
+        raise SystemExit('Could not load image: ' + file_path_name)
+
+        # raise SystemExit('Could not load image "%s" %s' %
+        #                   (file_path_name, pygame.get_error()))
+
+    return surface.convert_alpha()
+
+
+
+
+
 class DummySound:
     def play(self):
         pass
