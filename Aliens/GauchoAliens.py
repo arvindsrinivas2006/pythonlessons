@@ -21,7 +21,8 @@ from GreenAlien import GreenAlien
 
 if not pygame.image.get_extended():
     raise SystemExit("Sorry, extended image module required")
-
+# game constants
+CAN_POWER_UP = False
 DISPLAY_WIDTH = 1024
 DISPLAY_HEIGHT= 768
 MAX_SHOTS = 2  # most player bullets onscreen
@@ -30,7 +31,7 @@ BLACK = (0, 0, 0)  # Red, Green, Blue, absence of color!
 BOMB_ODDS = 60  # chances a new bomb will drop
 ALIEN_RELOAD = 12  # frames between new aliens
 SCREENRECT = Rect(0, 0, 1024, 768)
-
+POWER_UP_START_TICKS = 0
 main_directory = os.path.split(os.path.abspath(__file__))[0]
 
 def main(winstyle=0):
@@ -216,8 +217,14 @@ def game_loop(all_game_rects, screen, background, shots, last_alien, aliens, gre
                 bubble_shield_box.is_active = True
 
                 shield_box_spawned = True
-        detect_collisions(player, aliens, shots, bombs, boom_sound, green_aliens)
+            
+            detect_power_up_collision(
+                player, None, bubble_shield_box, bubble_shield)
 
+            
+
+        detect_collisions(player, aliens, shots, bombs, boom_sound, green_aliens)
+    
         # draw the scene
         is_dirty = all_game_rects.draw(screen)
         pygame.display.update(is_dirty)
@@ -229,6 +236,40 @@ def check_player_life(player):
     if (PlayerLives.lives < 1):
         # player is dead
         player.kill()
+
+def detect_power_up_collision(player, ammo_box=None,
+                              bubble_shield_box=None,
+                              bubble_shield=None):
+
+# these variables are scoped locally by default - pyton
+    global CAN_POWER_UP, MAX_SHOTS, POWER_UP_START_TICKS
+    if(bubble_shield_box is not None and
+        bubble_shield_box.rect.colliderect(player.rect) == 1):
+        CAN_POWER_UP = True
+
+        bubble_shield.visibility(True)
+
+        power_up_sound = utility.load_sound("Power Up Sound.wav")
+        power_up_sound.play()
+
+        bubble_shield_box.is_active = False
+
+        POWER_UP_START_TICKS = pygame.time.get_ticks()
+
+    if ((pygame.time.get_ticks()- POWER_UP_START_TICKS) > 10000 and
+            CAN_POWER_UP is True):
+        print("power up ticks end:", pygame.time.get_ticks())
+
+        CAN_POWER_UP = False
+
+        if(bubble_shield is not None):
+            bubble_shield.visibility(False)
+
+
+
+
+
+
 
 def detect_collisions(player, aliens, shots, bombs, boom_sound, green_aliens):
     for alien in pygame.sprite.spritecollide(player, aliens, 1):
